@@ -6,27 +6,28 @@ DEBUG = 0
 
 def main():
     if DEBUG:
-        sent_file = open('AFINN-111.txt')
         tweet_file = open('handin-1.json')
     else:
-        sent_file = open(sys.argv[1])
-        tweet_file = open(sys.argv[2])
+        tweet_file = open(sys.argv[1])
             
-    scores = {}
-    for line in sent_file.readlines():
-        term, score = line.split('\t')
-        scores[term] = int(score)
-
+    total_count = 0
+    term_count = {}
+        
     for line in tweet_file.readlines():
+        
         tweet = json.loads(line.strip())
-        score = 0
+        
         for term in tweet.get('text', '').strip().split(' '):
             term = ''.join(filter(lambda x: x.isalpha(),term))
             if not term:
                 continue
-            score += scores.get(term, 0)
-        print score 
-
+            
+            total_count += 1
+            term_count[term] = 1 + term_count.get(term, 0)
+            
+    for term, count in term_count.iteritems():
+        print term, (float(count) / total_count)
+        
         
 if __name__ == '__main__':
     main()
